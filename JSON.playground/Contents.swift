@@ -20,9 +20,13 @@ blackLotusUrlComponents.queryItems = [
 
 // MARK: - Call
 
+// Ссылки для Opt и Black Lotus
 if let optURL = optUrlComponents.url, let blackLotusURL = blackLotusUrlComponents.url {
     getData(urlRequest: optURL.absoluteString)
     getData(urlRequest: blackLotusURL.absoluteString)
 } else {
     print("Невозможно создать адрес")
 }
+
+// Проверка на работу некорректности ссылки
+getData(urlRequest: "")
