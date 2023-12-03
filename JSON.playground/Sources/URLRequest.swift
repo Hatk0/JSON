@@ -21,38 +21,38 @@ public func getData(urlRequest: String) {
         guard let data = data else { return }
         
         do {
-            let jsonDecoder = JSONDecoder()
-            let magicCard = try jsonDecoder.decode(Card.self, from: data)
+            let magicCard = try decodeCard(from: data)
 
-            if let optCard = magicCard.cards.first(where: { $0.name.lowercased() == "opt" }) {
-                print("""
-                Имя карты: \(optCard.name)
-                Мановая стоимость: \(optCard.manaCost ?? "N/A")
-                Конвертированная мановая стоимость: \(optCard.cmc)
-                Тип карты: \(optCard.type)
-                Редкость: \(optCard.rarity)
-                Название набора: \(optCard.setName)
-                Набор карт: \(optCard.cardSet)
-                Текст: \(optCard.text)
-                Художник: \(optCard.artist)
-                """)
-            } else if let blackLotusCard = magicCard.cards.first(where: { $0.name.lowercased() == "black lotus" }) {
-                print("""
-                Имя карты: \(blackLotusCard.name)
-                Мановая стоимость: \(blackLotusCard.manaCost ?? "N/A")
-                Конвертированная мановая стоимость: \(blackLotusCard.cmc)
-                Тип карты: \(blackLotusCard.type)
-                Редкость: \(blackLotusCard.rarity)
-                Название набора: \(blackLotusCard.setName)
-                Набор карт: \(blackLotusCard.cardSet)
-                Текст: \(blackLotusCard.text)
-                Художник: \(blackLotusCard.artist)
-                """)
+            let matchingCards = magicCard.cards.filter { $0.name.lowercased() == "opt" || $0.name.lowercased() == "black lotus" }
+            if matchingCards.isEmpty {
+                print("Карты не найдены")
             } else {
-                print("Карта не найдена")
+                for card in matchingCards {
+                    printCardDetails(card: card)
+                }
             }
         } catch {
             print("Ошибка при декодировании данных: \(error)")
         }
     }.resume()
+}
+
+func decodeCard(from data: Data) throws -> Card {
+    let jsonDecoder = JSONDecoder()
+    let magicCard = try jsonDecoder.decode(Card.self, from: data)
+    return magicCard
+}
+
+func printCardDetails(card: CardElement) {
+    print("""
+        Имя карты: \(card.name)
+        Мановая стоимость: \(card.manaCost ?? "N/A")
+        Конвертированная мановая стоимость: \(card.cmc)
+        Тип карты: \(card.type)
+        Редкость: \(card.rarity)
+        Название набора: \(card.setName)
+        Набор карт: \(card.cardSet)
+        Текст: \(card.text)
+        Художник: \(card.artist)
+        """)
 }
